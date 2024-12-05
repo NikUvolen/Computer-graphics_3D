@@ -2,27 +2,29 @@
 #include <gl/gl.h>
 
 #include "headers/camera.h"
+#include "headers/objects.h"
 
 
-float vert[] = {
+float vertForField[] = {
     1, 1, 0,
     1, -1, 0,
     -1, -1, 0,
     -1, 1, 0
 };
-int fieldSize[] = {10, 10}; // (x*2) * (y*2)
-int screenSize[] = {1000, 762};
+int fieldSize[] = {6, 6}; // (x*2) * (y*2)
+int screenSize[] = {1000, 1000};
+float lightPos[] = {0, 0, 4, 1};
 
 void showWorld() {
     glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(3, GL_FLOAT, 0, &vert);
+        glVertexPointer(3, GL_FLOAT, 0, &vertForField);
         for (int i = -fieldSize[0]; i < fieldSize[0]; i++) {
             for (int j = -fieldSize[1]; j < fieldSize[1]; j++) {
                 glPushMatrix();
                     if ((i+j) % 2 == 0)
-                        glColor3f(1, 1, 1);
+                        glColor3f(0.35, 0.31, 0.55);
                     else
-                        glColor3f(0, 0, 0);
+                        glColor3f(0.74, 0.31, 0.56);
                     glTranslatef(i*2, j*2, 0);
                     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
                 glPopMatrix();
@@ -31,6 +33,23 @@ void showWorld() {
         glColor3f(0, 0.5, 0);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+void lightConfig() {
+    glEnable(GL_LIGHTING); // включить расчет света
+    glEnable(GL_LIGHT0); // включить свет
+    glEnable(GL_COLOR_MATERIAL); // включить материал
+    glEnable(GL_NORMALIZE); // нормализация векторов для увеличения кубов
+    glShadeModel(GL_SMOOTH); // гладкое затемнение
+
+    // настройка света
+    float light_ambient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+    float light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float light_specular[] = { 0.4f, 0.4f, 0.4f, 32.0f };
+    // включение настроек
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 }
 
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
@@ -62,7 +81,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
     wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wcex.lpszMenuName = NULL;
-    wcex.lpszClassName = "GLSample";
+    wcex.lpszClassName = "Computer graphics 3D";
     wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);;
 
 
@@ -71,8 +90,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     /* create main window */
     hwnd = CreateWindowEx(0,
-                          "GLSample",
-                          "OpenGL Sample",
+                          "Computer graphics 3D",
+                          "Computer graphics 3D",
                           WS_OVERLAPPEDWINDOW,
                           CW_USEDEFAULT,
                           CW_USEDEFAULT,
@@ -88,9 +107,17 @@ int WINAPI WinMain(HINSTANCE hInstance,
     /* enable OpenGL for the window */
     EnableOpenGL(hwnd, &hDC, &hRC);
 
+    // Подключение буффера глубины
     glEnable(GL_DEPTH_TEST);
 
-    glFrustum(-1,1, -1,1, 1,70);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-1, 1, -1, 1, 1,70);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    lightConfig();
 
     Observer *observer = initObserver();
 
@@ -120,17 +147,19 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
             glPushMatrix();
                 cameraMove(observer);
+                glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
                 showWorld();
+                
+                renderCubes();
             glPopMatrix();
 
             glDisableClientState(GL_VERTEX_ARRAY);
-
-            // glPushMatrix();
-            //     showWorld();
-            //     cameraMove();
-            // glPopMatrix();
-
             SwapBuffers(hDC);
+
+            // light move
+            lightPos[0] = 2 * sin(theta * .1);
+            lightPos[1] = 2 * cos(theta * .1);
+            theta++;
 
             Sleep (1);
         }

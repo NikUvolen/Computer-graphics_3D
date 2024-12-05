@@ -6,8 +6,8 @@
 
 #include "../headers/camera.h"
 
-float xAlpha = 20;
-float zAlpha = 0; 
+float xAlpha = 58;
+float zAlpha = 57; 
 
 struct Observer {
     float x, y;
@@ -40,8 +40,8 @@ void _moving(Observer* observer, short vertical, short horizontal) {
 Observer* initObserver() {
     Observer* observer = malloc(sizeof(Observer));
 
-    observer->x = 0;
-    observer->y = 0;
+    observer->x = 4;
+    observer->y = -4;
 }
 
 void cameraMove(Observer *observer) {
@@ -56,5 +56,5 @@ void cameraMove(Observer *observer) {
 
     glRotatef(-xAlpha, 1, 0, 0);
     glRotatef(-zAlpha, 0, 0, 1);
-    glTranslatef(-observer->x, -observer->y, -3);
+    glTranslatef(-observer->x, -observer->y, -5);
 }
