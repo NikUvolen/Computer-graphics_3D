@@ -4,7 +4,6 @@
 #include "headers/camera.h"
 #include "headers/objects.h"
 
-
 float vertForField[] = {
     1, 1, 0,
     1, -1, 0,
@@ -35,12 +34,14 @@ void showWorld() {
     glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-void lightConfig() {
+void myGLConfig() {
     glEnable(GL_LIGHTING); // включить расчет света
     glEnable(GL_LIGHT0); // включить свет
     glEnable(GL_COLOR_MATERIAL); // включить материал
     glEnable(GL_NORMALIZE); // нормализация векторов для увеличения кубов
     glShadeModel(GL_SMOOTH); // гладкое затемнение
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // настройка света
     float light_ambient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -112,14 +113,27 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glFrustum(-1, 1, -1, 1, 1,70);
+    glFrustum(-1,1, -1,1, 1,70);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    lightConfig();
-
     Observer *observer = initObserver();
+
+    // Pyromids config
+    const int pyromidsNumber = 3;
+    const int vertexNumber = 9;
+    float vertices[vertexNumber * 2 * 3 + 2 * 3];
+    unsigned int indices[vertexNumber * 4 * 3 + 2 * 3];
+    float pyromidsPos[][3] = {
+        {0.0f, 2.0f, 0.0f},
+        {2.0f, -2.0f, 0.0f},
+        {-2.f, -2.0f, 0.0f}
+    };
+    float opacityArr[] = { 1.0f, 0.7f, 0.3f };
+    initFrustumPyramid(vertexNumber, vertices, indices);
+
+    myGLConfig();
 
     /* program main loop */
     while (!bQuit)
@@ -144,16 +158,20 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+            
             glPushMatrix();
                 cameraMove(observer);
                 glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
                 showWorld();
-                
-                renderCubes();
+  
+                // renderCubes();
+
+                renderFrustumPyramids(vertexNumber, pyromidsNumber, pyromidsPos, opacityArr, vertices, indices);
+                glPushMatrix(); //Непрозрачная фигура
+                    
+                glPopMatrix();
             glPopMatrix();
 
-            glDisableClientState(GL_VERTEX_ARRAY);
             SwapBuffers(hDC);
 
             // light move

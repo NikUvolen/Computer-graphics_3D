@@ -6,8 +6,8 @@
 
 #include "../headers/camera.h"
 
-float xAlpha = 58;
-float zAlpha = 57; 
+float xAlpha = 67;
+float zAlpha = 123; 
 
 struct Observer {
     float x, y;
@@ -40,8 +40,8 @@ void _moving(Observer* observer, short vertical, short horizontal) {
 Observer* initObserver() {
     Observer* observer = malloc(sizeof(Observer));
 
-    observer->x = 4;
-    observer->y = -4;
+    observer->x = 8.22f;
+    observer->y = 3.95f;
 }
 
 void cameraMove(Observer *observer) {

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1733428393 source:c:\users\mixa2\desktop\computer-graphics_3d\main.c
+1733446390 source:c:\users\mixa2\desktop\computer-graphics_3d\main.c
 	<windows.h>
 	<gl/gl.h>
 	"headers/camera.h"
@@ -13,9 +13,10 @@
 	<math.h>
 	"../headers/camera.h"
 
-1733426776 c:\users\mixa2\desktop\computer-graphics_3d\headers\objects.h
+1733445484 c:\users\mixa2\desktop\computer-graphics_3d\headers\objects.h
 
-1733427763 source:c:\users\mixa2\desktop\computer-graphics_3d\include\objects.c
+1733446264 source:c:\users\mixa2\desktop\computer-graphics_3d\include\objects.c
 	<gl/gl.h>
 	"../headers/objects.h"
+	<math.h>
 
